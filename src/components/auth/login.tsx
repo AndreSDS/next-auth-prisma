@@ -8,8 +8,6 @@ type Props = {
 };
 
 export const Login = ({ session }: Props) => {
-  console.log({ session });
-
   return (
     <div>
       {!session ? (
