@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+/* import { PrismaClient } from "@prisma/client";
 import { getenv } from "@/helpers/getenv";
 
 const { NODE_ENV } = getenv();
@@ -10,3 +10,4 @@ if (NODE_ENV !== "production") {
 }
 
 export default prismaClient;
+ */

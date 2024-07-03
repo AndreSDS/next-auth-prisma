@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ 
+const inter = Inter({
   weight: ["400", "500", "600", "700"],
   style: ["normal"],
   subsets: ["latin"],
@@ -26,8 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(inter.className, "mx-4 md:mx-48 xl:mx-96")}>
-        <Navbar />
         {children}
+        <Toaster />
       </body>
     </html>
   );

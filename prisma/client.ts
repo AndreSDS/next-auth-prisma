@@ -1,7 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { getenv } from "@/helpers/getenv";
-
-const { NODE_ENV } = getenv();
 
 declare global {
   var cachedPrisma: PrismaClient;
@@ -9,7 +6,7 @@ declare global {
 
 let prismaClient: PrismaClient;
 
-if (NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production") {
   prismaClient = new PrismaClient();
 } else {
   if (!globalThis.cachedPrisma) {
