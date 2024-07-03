@@ -1,7 +1,7 @@
 "use client";
-
 import { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
+import { Button } from "../ui/button";
 
 type Props = {
   session: Session | null;
@@ -11,9 +11,9 @@ export const Login = ({ session }: Props) => {
   return (
     <div>
       {!session ? (
-        <button onClick={() => signIn("google")}>SignIn</button>
+        <Button onClick={() => signIn()}>SignIn</Button>
       ) : (
-        <button onClick={() => signOut()}>SignOut</button>
+        <Button onClick={() => signOut()}>SignOut</Button>
       )}
     </div>
   );

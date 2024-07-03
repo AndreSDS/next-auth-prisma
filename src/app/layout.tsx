@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import { AuthSessionProvider } from "@/providers/auth/session-provider";
+import "@/styles/globals.css";
 import { Navbar } from "@/components/navbar";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  weight: ["400", "500", "600", "700"],
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,11 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <AuthSessionProvider session={session}>
-          <Navbar />
-          {children}
-        </AuthSessionProvider>
+      <body className={cn(inter.className, "mx-4 md:mx-48 xl:mx-96")}>
+        <Navbar />
+        {children}
       </body>
     </html>
   );
