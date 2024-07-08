@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { Footer } from "@/components/footer/footer";
 

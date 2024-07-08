@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import prismaClient from "../../../../prisma/client";
+import { UserCredentials } from "@/services/auth/auth";
+import { UserRegisterInputs } from "@/components/auth/user-register-form";
 
 export async function POST(req: NextRequest) {
-  const data = await req.json();
+  const data = (await req.json()) as UserRegisterInputs;
 
   const { email, hashedPassword, name } = data;
 
@@ -15,7 +17,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "User already exists", status: 400 });
   }
 
-  const encryptPassword = await bcrypt.hash(hashedPassword, 10);
+  const salt = await bcrypt.genSalt(10);
+  if (!salt) {
+    return NextResponse.json({ message: "Error creating user", status: 500 });
+  }
+
+  const encryptPassword = await bcrypt.hash(hashedPassword, salt);
 
   const user = await prismaClient.user.create({
     data: {

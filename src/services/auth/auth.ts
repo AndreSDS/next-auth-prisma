@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { z } from "zod";
+import bcrypt from "bcrypt";
 import prismaClient from "../../../prisma/client";
-import { getenv } from "@/helpers/getenv";
 
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -10,12 +10,9 @@ import GitHubProvider from "next-auth/providers/github";
 
 export const userCreadentialsSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
-  password: z
+  hashedPassword: z
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
-  username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters" }),
 });
 
 export type UserCredentials = z.infer<typeof userCreadentialsSchema>;
@@ -35,15 +32,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           type: "email",
           placeholder: "jhonDoe@remail.com",
         },
-        password: {
+        hashedPassword: {
           label: "Password",
           type: "password",
           placeholder: "******",
         },
-        username: { label: "Username", type: "text", placeholder: "Jhon Doe" },
       },
-      async authorize(credentials, request): Promise<any> {
-        console.log("credentials", credentials);
+      async authorize(request): Promise<any> {
+        const result = userCreadentialsSchema.parse(request);
+        if (!result) {
+          throw new Error("Invalid credentials");
+        }
+
+        const user = await prismaClient.user.findUnique({
+          where: {
+            email: result.email,
+          },
+        });
+
+        if (!user || !user.hashedPassword) {
+          throw new Error("User not registered by credentials");
+        }
+
+        const isValidPassword = await bcrypt.compare(
+          result.hashedPassword,
+          user.hashedPassword
+        );
+
+        if (!isValidPassword) {
+          throw new Error("User not found");
+        }
+
+        return user;
       },
     }),
     GoogleProvider({
@@ -56,4 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   secret: process.env.AUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
+  pages: {
+    signIn: "/login",
+  },
 });

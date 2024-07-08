@@ -11,8 +11,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
-import { signIn } from "@/services/auth/auth";
-import { error } from "console";
+import { useRouter } from "next/navigation";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -31,6 +30,7 @@ export const userResgisterSchema = z.object({
 export type UserRegisterInputs = z.infer<typeof userResgisterSchema>;
 
 export function UserRegisterForm({ className, ...props }: UserAuthFormProps) {
+  const router = useRouter();
   const { toast } = useToast();
 
   const {
@@ -51,7 +51,7 @@ export function UserRegisterForm({ className, ...props }: UserAuthFormProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(reqBody),
+        body: JSON.stringify(reqBody.data),
       });
 
       const response = await request.json();
@@ -60,11 +60,7 @@ export function UserRegisterForm({ className, ...props }: UserAuthFormProps) {
         throw new Error(response.message);
       }
 
-      toast({
-        title: "Success",
-        description: response.message,
-        variant: "default",
-      });
+      router.push("/signIn");
     } catch (error) {
       const err = error as Error;
       toast({

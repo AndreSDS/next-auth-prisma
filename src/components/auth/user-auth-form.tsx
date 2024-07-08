@@ -4,20 +4,21 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { signIn } from "@/services/auth/auth";
+import { signIn, SignInResponse } from "next-auth/react";
 import { z } from "zod";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const userAuthSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
-  password: z
+  hashedPassword: z
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
 });
@@ -25,6 +26,9 @@ const userAuthSchema = z.object({
 export type UserAuthInputs = z.infer<typeof userAuthSchema>;
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+  const router = useRouter();
+  const { toast } = useToast();
+
   const {
     register,
     handleSubmit,
@@ -35,10 +39,23 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   });
 
   const onSubmit = async (data: UserAuthInputs) => {
-    const response = await signIn<"credentials">("credentials", {
-      ...data,
-      redirect: undefined,
-    });
+    try {
+      const response: SignInResponse | undefined = await signIn("credentials", {
+        ...data,
+      });
+
+      router.push("/");
+    } catch (error) {
+      const err = error as Error;
+      toast({
+        title: "Error",
+        description: `Erro ao logar usuário. ${err.message}`,
+        variant: "destructive",
+        action: (
+          <ToastAction altText="tente novamente">Tente novamente</ToastAction>
+        ),
+      });
+    }
   };
 
   return (
@@ -59,7 +76,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             />
 
             <Input
-              {...register("password")}
+              {...register("hashedPassword")}
               id="password"
               placeholder="******"
               type="password"
