@@ -106,7 +106,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       <Button
         variant="outline"
         type="button"
-        // disabled={isLoading}
+        disabled={isLoading}
+        onClick={() => signIn("github", { callbackUrl: "/" })}
       >
         {false ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -114,6 +115,20 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           <Icons.gitHub className="mr-2 h-4 w-4" />
         )}{" "}
         GitHub
+      </Button>
+
+      <Button
+        variant="outline"
+        type="button"
+        disabled={isLoading}
+        onClick={() => signIn("google", { callbackUrl: "/" })}
+      >
+        {false ? (
+          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Icons.google className="mr-2 h-4 w-4" />
+        )}{" "}
+        Google
       </Button>
     </div>
   );
