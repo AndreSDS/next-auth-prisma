@@ -42,9 +42,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     try {
       const response: SignInResponse | undefined = await signIn("credentials", {
         ...data,
+        callbackUrl: "/",
       });
-
-      router.push("/");
     } catch (error) {
       const err = error as Error;
       toast({
